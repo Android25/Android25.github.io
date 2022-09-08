@@ -1,0 +1,152 @@
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+<style>
+
+body {
+ background-image: url(https://wiki.wargaming.net/skins/globalwiki/images/bg.jpg?2018-07-06T09:21:40Z);
+ /*background-image: url(https://na.wargaming.net/clans/static/1.21.3-1.46.0/clansassets/images/v2/common/common-pattern.jpg);*/
+}
+
+.item {
+    position: relative;
+    float: left;
+	stroke: #6fdb6f;
+}
+
+.item h2 {
+    text-align:center;
+    position: absolute;
+    line-height: 160px;
+	font-size: 20px;
+    width: 100%;
+}
+
+svg {
+   -webkit-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+	display: block;
+	margin: auto;
+}
+
+.circle_animation {
+  stroke-dasharray: 440; /* this value is the pixel circumference of the circle */
+  stroke-dashoffset: 440;
+  transition: all 1s linear;
+}
+
+.wrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button {
+  height: fit-content;
+  width: fit-content;
+}
+
+.thing {
+position: absolute;
+  width: 410px;
+  height: 550px;
+  z-index: 15;
+  top: 20%;
+  left: 50%;
+  margin: -100px 0 0 -150px;
+  background: #d8e4ea;
+  border-radius: 25px;
+  border: 3px solid #654637;
+
+}
+</style>
+<body>
+<div class="item html thing">
+<div>
+<h1 class="wrapper"><span style="color: #654637">[-RKT-]</span>&nbsp;Activity Code</h1>
+    <h2 id="code">Enter Seed</h2>
+    <svg width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+     <g>
+      <title>Layer 1</title>
+      <circle id="circle" class="circle_animation" r="69.85699" cy="81" cx="81" stroke-width="9" fill="none"/>
+     </g>
+    </svg>
+	<br/>
+	<div class="wrapper"><button onclick="copyText()">Copy Code</button></div>
+	<br/><br/><br/>
+	<div class="wrapper"><button onclick="copyLastCode()">Copy Previous Code</button></div>
+	<br/>
+	<label for="seedText" class="wrapper">Seed</label>
+	<div class="wrapper"><input type="text" id="seedText" rows="1" cols="10" style="resize: none;"></textarea></div><br/>
+	<div class="wrapper"><button id="lockButton" onclick="togglePassword()">Lock Seed</button></div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script>
+var initialOffset = 440;
+var period = 900000;
+$('.circle_animation').css('stroke-dashoffset', initialOffset-(period*(initialOffset/period)));
+var t = setInterval(runDisplay, 1000);
+
+function copyText() {
+	navigator.clipboard.writeText(document.getElementById("code").innerHTML);
+}
+
+function copyLastCode() {
+	var seed = document.getElementById("seedText").value;
+	var time = new Date().getTime() - period;
+	var remainder = time % period;
+	var block = (time - remainder) / period;
+
+	var encode = seed.length > 0 ? block + seed + "a1" : 0;
+
+	var code = stringToHash(encode.toString());
+	
+	navigator.clipboard.writeText(code);
+}
+
+function togglePassword() {
+var input = document.getElementById("seedText");
+var button = document.getElementById("lockButton");
+	if (input.type === "password") {
+		input.type = "text";
+		input.removeAttribute("disabled");
+		button.innerHTML = "Lock Seed"
+	} else {
+		input.type = "password";
+		input.disabled = "true";
+		button.innerHTML = "Unlock Seed"
+	}
+}
+
+function runDisplay() {
+var seed = document.getElementById("seedText").value;
+var time = new Date().getTime();
+var remainder = time % period;
+var block = (time - remainder) / period;
+
+var encode = seed.length > 0 ? block + seed + "a1" : 0;
+
+var code = stringToHash(encode.toString());
+
+$('.circle_animation').css('stroke-dashoffset', initialOffset-((period - remainder)*(initialOffset/period)));
+if(period - remainder < 180000) document.getElementById("circle").style.stroke = "#FF7276";
+else document.getElementById("circle").style.stroke = "#6fdb6f";
+document.getElementById("code").innerHTML = code;
+
+}
+
+function stringToHash(string) {
+	var hash = 0;
+	if (string.length == 0 || string == "0") return "Enter Seed";
+	for (i = 0; i < string.length; i++) {
+		char = string.charCodeAt(i);
+		hash = ((hash << 5) - hash) + char;
+		hash = hash & hash;
+		}
+	return Math.abs(hash);
+}
+
+</script>
